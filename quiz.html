@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>エニアグラム診断 | AI-KNOW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #9B6DD7;
+  --secondary: #C77DBA;
+  --bg: #FFFBFE;
+  --text: #2D2346;
+  --text-sub: #7A6B8A;
+  --radius-card: 20px;
+  --radius-btn: 60px;
+  --gradient-cta: linear-gradient(135deg, #C77DBA, #9B6DD7);
+}
+
+html, body {
+  font-family: 'Noto Sans JP', 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Sticky Header ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 251, 254, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(155, 109, 215, 0.08);
+}
+
+.header-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #DDD0EB;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.header-back:hover { border-color: var(--primary); }
+.header-back svg { width: 16px; height: 16px; stroke: var(--text); }
+
+.header-title {
+  text-align: center;
+  line-height: 1;
+}
+.header-title-main {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 2px;
+  background: var(--gradient-cta);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-title-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+.header-counter {
+  background: rgba(155, 109, 215, 0.1);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ===== Progress Section ===== */
+.progress-section {
+  padding: 16px 20px 12px;
+}
+
+.progress-percent {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--primary);
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+.progress-bar-container {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #EDE4F5;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #C77DBA, #9B6DD7);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.progress-labels {
+  display: flex;
+  gap: 4px;
+}
+
+.progress-label {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-sub);
+  font-weight: 500;
+}
+
+.progress-label.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ===== Question Card ===== */
+.question-area {
+  padding: 8px 16px 24px;
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.question-card {
+  background: #fff;
+  border-radius: var(--radius-card);
+  padding: 28px 24px 32px;
+  box-shadow: 0 2px 20px rgba(155, 109, 215, 0.08);
+  border: 1px solid rgba(155, 109, 215, 0.06);
+  position: relative;
+}
+
+.question-card.slide-in-right {
+  animation: slideInRight 0.4s ease forwards;
+}
+.question-card.slide-out-left {
+  animation: slideOutLeft 0.4s ease forwards;
+}
+.question-card.slide-in-left {
+  animation: slideInLeft 0.4s ease forwards;
+}
+.question-card.slide-out-right {
+  animation: slideOutRight 0.4s ease forwards;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOutLeft {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+.question-number {
+  display: inline-block;
+  background: rgba(155, 109, 215, 0.1);
+  color: var(--primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 3px 12px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.question-text {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 28px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.answer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.answer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.answer-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #DDD0EB;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.answer-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: scale(1.08);
+}
+
+.answer-btn.selected {
+  background: var(--gradient-cta);
+  border-color: transparent;
+  color: #fff;
+  transform: scale(1.18);
+  box-shadow: 0 4px 16px rgba(155, 109, 215, 0.35);
+}
+
+.answer-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 340px;
+  padding: 0 2px;
+}
+
+.answer-label {
+  font-size: 11px;
+  color: var(--text-sub);
+  font-weight: 500;
+}
+
+/* ===== Part Interstitial ===== */
+.interstitial-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 200;
+  background: rgba(45, 27, 78, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.4s ease;
+}
+.interstitial-overlay.show {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.interstitial-card {
+  background: #fff;
+  border-radius: var(--radius-card);
+  padding: 40px 32px;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(45, 27, 78, 0.2);
+  animation: scaleIn 0.4s ease;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.interstitial-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--gradient-cta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: #fff;
+}
+
+.interstitial-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.interstitial-desc {
+  font-size: 14px;
+  color: var(--text-sub);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.interstitial-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gradient-cta);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 14px 36px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.interstitial-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(155, 109, 215, 0.3);
+}
+
+/* ===== Milestone Popup ===== */
+.milestone-popup {
+  position: fixed;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 28px;
+  box-shadow: 0 6px 24px rgba(155, 109, 215, 0.2);
+  border: 1px solid rgba(155, 109, 215, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+.milestone-popup.show {
+  top: 20px;
+}
+.milestone-popup .milestone-icon {
+  font-size: 22px;
+}
+.milestone-popup .milestone-text {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* ===== Analysis Screen ===== */
+.analysis-screen {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 500;
+  background: linear-gradient(135deg, #2D1B4E, #4A2D6E, #6B3FA0);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.analysis-screen.show {
+  display: flex;
+}
+
+.enneagram-symbol {
+  width: 160px;
+  height: 160px;
+  margin-bottom: 40px;
+  position: relative;
+  animation: rotateSymbol 20s linear infinite;
+}
+
+@keyframes rotateSymbol {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.enneagram-symbol svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px rgba(199, 125, 186, 0.5));
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(199, 125, 186, 0.4)); }
+  50% { filter: drop-shadow(0 0 35px rgba(199, 125, 186, 0.8)); }
+}
+
+.analysis-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.analysis-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+.analysis-step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step-indicator {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+.step-indicator.loading {
+  border-color: rgba(199, 125, 186, 0.6);
+}
+.step-indicator.loading::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid transparent;
+  border-top-color: #C77DBA;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.step-indicator.done {
+  background: var(--gradient-cta);
+  border-color: transparent;
+}
+.step-indicator.done::after {
+  content: '';
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg);
+  margin-top: -2px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.step-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+.analysis-step.visible .step-text {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 375px) {
+  .answer-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+  .answer-buttons { gap: 6px; }
+  .question-text { font-size: 16px; }
+}
+
+@media (min-width: 600px) {
+  .question-area { max-width: 500px; margin: 0 auto; }
+  .progress-section { max-width: 500px; margin: 0 auto; }
+  .answer-btn { width: 48px; height: 48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="header">
+  <button class="header-back" onclick="goBack()" aria-label="戻る">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <div class="header-title-main">ENNEAGRAM</div>
+    <div class="header-title-sub">AI-KNOW</div>
+  </div>
+  <div class="header-counter" id="questionCounter">Q1 / 54</div>
+</header>
+
+<!-- ===== Progress ===== -->
+<section class="progress-section">
+  <div class="progress-percent" id="progressPercent">0%</div>
+  <div class="progress-bar-container">
+    <div class="progress-segment"><div class="progress-fill" id="progressFill1"></div></div>
+    <div class="progress-segment"><div class="progress-fill" id="progressFill2"></div></div>
+    <div class="progress-segment"><div class="progress-fill" id="progressFill3"></div></div>
+  </div>
+  <div class="progress-labels">
+    <div class="progress-label active" id="partLabel1">Part 1</div>
+    <div class="progress-label" id="partLabel2">Part 2</div>
+    <div class="progress-label" id="partLabel3">Part 3</div>
+  </div>
+</section>
+
+<!-- ===== Question Area ===== -->
+<div class="question-area">
+  <div class="question-card" id="questionCard">
+    <div class="question-number" id="questionNumber">Q1</div>
+    <div class="question-text" id="questionText"></div>
+    <div class="answer-section">
+      <div class="answer-buttons" id="answerButtons">
+        <button class="answer-btn" data-value="1" onclick="selectAnswer(1)">1</button>
+        <button class="answer-btn" data-value="2" onclick="selectAnswer(2)">2</button>
+        <button class="answer-btn" data-value="3" onclick="selectAnswer(3)">3</button>
+        <button class="answer-btn" data-value="4" onclick="selectAnswer(4)">4</button>
+        <button class="answer-btn" data-value="5" onclick="selectAnswer(5)">5</button>
+        <button class="answer-btn" data-value="6" onclick="selectAnswer(6)">6</button>
+        <button class="answer-btn" data-value="7" onclick="selectAnswer(7)">7</button>
+      </div>
+      <div class="answer-labels">
+        <span class="answer-label">当てはまらない</span>
+        <span class="answer-label">当てはまる</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Part Interstitial ===== -->
+<div class="interstitial-overlay" id="interstitialOverlay">
+  <div class="interstitial-card">
+    <div class="interstitial-icon" id="interstitialIcon">2</div>
+    <div class="interstitial-title" id="interstitialTitle">Part 2</div>
+    <div class="interstitial-desc" id="interstitialDesc">いい調子です！あと36問です</div>
+    <button class="interstitial-btn" onclick="dismissInterstitial()">
+      次へ進む <span>→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== Milestone Popup ===== -->
+<div class="milestone-popup" id="milestonePopup">
+  <span class="milestone-icon" id="milestoneIcon"></span>
+  <span class="milestone-text" id="milestoneText"></span>
+</div>
+
+<!-- ===== Analysis Screen ===== -->
+<div class="analysis-screen" id="analysisScreen">
+  <div class="enneagram-symbol">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer circle -->
+      <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(199,125,186,0.5)" stroke-width="1.5"/>
+      <!-- 9 points and connecting lines -->
+      <polygon points="100,12 153.5,33.5 181.9,83.5 173.5,141 134.2,181 65.8,181 26.5,141 18.1,83.5 46.5,33.5"
+        fill="none" stroke="rgba(199,125,186,0.6)" stroke-width="1"/>
+      <!-- Inner triangle (3-6-9) -->
+      <polygon points="181.9,83.5 26.5,141 46.5,33.5"
+        fill="none" stroke="rgba(199,125,186,0.8)" stroke-width="1.5"/>
+      <!-- Inner hexagram (1-4-2-8-5-7) -->
+      <polyline points="100,12 173.5,141 153.5,33.5 26.5,141 181.9,83.5 65.8,181 134.2,181 18.1,83.5 100,12"
+        fill="none" stroke="rgba(199,125,186,0.7)" stroke-width="1.2"/>
+      <!-- Point dots -->
+      <circle cx="100" cy="12" r="5" fill="#C77DBA"/>
+      <circle cx="153.5" cy="33.5" r="5" fill="#C77DBA"/>
+      <circle cx="181.9" cy="83.5" r="5" fill="#C77DBA"/>
+      <circle cx="173.5" cy="141" r="5" fill="#C77DBA"/>
+      <circle cx="134.2" cy="181" r="5" fill="#C77DBA"/>
+      <circle cx="65.8" cy="181" r="5" fill="#C77DBA"/>
+      <circle cx="26.5" cy="141" r="5" fill="#C77DBA"/>
+      <circle cx="18.1" cy="83.5" r="5" fill="#C77DBA"/>
+      <circle cx="46.5" cy="33.5" r="5" fill="#C77DBA"/>
+      <!-- Point labels -->
+      <text x="100" y="8" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">9</text>
+      <text x="160" y="30" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">8</text>
+      <text x="192" y="86" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">7</text>
+      <text x="182" y="148" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">6</text>
+      <text x="140" y="194" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">5</text>
+      <text x="60" y="194" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">4</text>
+      <text x="18" y="148" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">3</text>
+      <text x="8" y="86" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">2</text>
+      <text x="40" y="30" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Inter" font-weight="700">1</text>
+    </svg>
+  </div>
+  <div class="analysis-steps" id="analysisSteps">
+    <div class="analysis-step" id="step1">
+      <div class="step-indicator" id="stepInd1"></div>
+      <span class="step-text">回答データを集計中...</span>
+    </div>
+    <div class="analysis-step" id="step2">
+      <div class="step-indicator" id="stepInd2"></div>
+      <span class="step-text">9タイプのスコアを算出中...</span>
+    </div>
+    <div class="analysis-step" id="step3">
+      <div class="step-indicator" id="stepInd3"></div>
+      <span class="step-text">ウイングを判定中...</span>
+    </div>
+    <div class="analysis-step" id="step4">
+      <div class="step-indicator" id="stepInd4"></div>
+      <span class="step-text">トライタイプを分析中...</span>
+    </div>
+    <div class="analysis-step" id="step5">
+      <div class="step-indicator" id="stepInd5"></div>
+      <span class="step-text">あなたの結果を生成中...</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Question Data =====
+const QUESTIONS = [
+  {id:1, text:"物事には「正しいやり方」があると感じ、それに沿いたいと思う", type:1, weight:1.2, reversed:false},
+  {id:2, text:"誰かが困っていると、自分のことを後回しにしてでも手を貸したくなる", type:2, weight:1.2, reversed:false},
+  {id:3, text:"興味のあることを深く調べ始めると、何時間でも没頭できる", type:5, weight:1.2, reversed:false},
+  {id:4, text:"自分の意見をはっきり言うのに抵抗がない", type:8, weight:1.2, reversed:false},
+  {id:5, text:"目標を達成したときの達成感が、自分を動かす最大の原動力だ", type:3, weight:1.2, reversed:false},
+  {id:6, text:"最悪のケースを事前に想定しておかないと落ち着かない", type:6, weight:1.2, reversed:false},
+  {id:7, text:"みんなが仲良くしているのを見ると、心が落ち着く", type:9, weight:1.2, reversed:false},
+  {id:8, text:"自分には他の人にはない、特別な感受性があると感じる", type:4, weight:1.2, reversed:false},
+  {id:9, text:"次に楽しいことを考えているときが一番ワクワクする", type:7, weight:1.2, reversed:false},
+  {id:10, text:"小さなミスやルール違反が気になって、つい指摘したくなる", type:1, weight:1.0, reversed:false},
+  {id:11, text:"「ありがとう」と言われると、自分の存在価値を強く感じる", type:2, weight:1.0, reversed:false},
+  {id:12, text:"大人数の集まりより、一人で過ごす時間のほうがエネルギーが回復する", type:5, weight:1.0, reversed:false},
+  {id:13, text:"弱い立場の人が不当に扱われていると、黙っていられない", type:8, weight:1.0, reversed:false},
+  {id:14, text:"周囲から「すごい」と思われたい気持ちが強いほうだ", type:3, weight:1.0, reversed:false},
+  {id:15, text:"信頼できる人やグループに属していると安心する", type:6, weight:1.0, reversed:false},
+  {id:16, text:"争いごとを避けるために、自分の意見を引っ込めることがある", type:9, weight:1.0, reversed:false},
+  {id:17, text:"悲しい曲や映画に強く心を動かされ、その感情に浸りたくなる", type:4, weight:1.0, reversed:false},
+  {id:18, text:"一つのことに縛られるより、色々な選択肢を持っていたい", type:7, weight:1.0, reversed:false},
+  {id:19, text:"「もっと良くできるはず」と自分に対して厳しくなることが多い", type:1, weight:1.2, reversed:false},
+  {id:20, text:"相手が何を求めているか、言われなくても察するのが得意だ", type:2, weight:1.0, reversed:false},
+  {id:21, text:"感情的な場面では、一歩引いて観察する側に回ることが多い", type:5, weight:1.0, reversed:false},
+  {id:22, text:"主導権を握れない状況にストレスを感じる", type:8, weight:1.0, reversed:false},
+  {id:23, text:"効率の悪いやり方を見ると、もどかしく感じる", type:3, weight:1.0, reversed:false},
+  {id:24, text:"権威ある人の言うことでも、鵜呑みにせず疑ってかかるほうだ", type:6, weight:1.0, reversed:false},
+  {id:25, text:"急かされるのが苦手で、自分のペースで進めたい", type:9, weight:1.0, reversed:false},
+  {id:26, text:"「みんなと同じ」であることに抵抗を感じる", type:4, weight:1.0, reversed:false},
+  {id:27, text:"退屈な状況が続くと、耐えられなくなる", type:7, weight:1.0, reversed:false},
+  {id:28, text:"周囲がいい加減に物事を進めていると、イライラを感じる", type:1, weight:1.0, reversed:false},
+  {id:29, text:"人に頼られると断れないことが多い", type:2, weight:1.0, reversed:false},
+  {id:30, text:"自分のプライベートな領域に踏み込まれるのが苦手だ", type:5, weight:1.0, reversed:false},
+  {id:31, text:"対立を恐れず、必要なら正面からぶつかっていける", type:8, weight:1.0, reversed:false},
+  {id:32, text:"自分の成果や実績を、さりげなくアピールするのが上手だと思う", type:3, weight:1.0, reversed:false},
+  {id:33, text:"新しいことを始める前に「大丈夫かな」と不安になりやすい", type:6, weight:1.0, reversed:false},
+  {id:34, text:"何かを決めるとき、なかなか決断できないことが多い", type:9, weight:1.0, reversed:false},
+  {id:35, text:"自分の内面を深く理解してくれる人がいないと感じることがある", type:4, weight:1.2, reversed:false},
+  {id:36, text:"ネガティブな感情にとどまるのが苦手で、すぐ気分を切り替えたくなる", type:7, weight:1.0, reversed:false},
+  {id:37, text:"手を抜くくらいなら、時間がかかっても丁寧にやりたい", type:1, weight:1.0, reversed:false},
+  {id:38, text:"自分が必要とされていないと感じると、不安になる", type:2, weight:1.2, reversed:false},
+  {id:39, text:"まず十分な情報を集めてからでないと、行動に移せない", type:5, weight:1.2, reversed:false},
+  {id:40, text:"弱さを見せることに抵抗がある", type:8, weight:1.2, reversed:false},
+  {id:41, text:"失敗するくらいなら、最初から挑戦しないほうがいいと思うことがある", type:3, weight:1.2, reversed:false},
+  {id:42, text:"一度信頼した相手には、とことん忠実でいたい", type:6, weight:1.2, reversed:false},
+  {id:43, text:"波風を立てるくらいなら、多少の不満は我慢できる", type:9, weight:1.2, reversed:false},
+  {id:44, text:"自分の感情や気分の波が大きいほうだと思う", type:4, weight:1.0, reversed:false},
+  {id:45, text:"新しい体験や刺激を常に求めている", type:7, weight:1.2, reversed:false},
+  {id:46, text:"細かいことは気にせず、おおらかに構えるほうだ", type:1, weight:0.8, reversed:true},
+  {id:47, text:"人のことより、まず自分を優先するほうだ", type:2, weight:0.8, reversed:true},
+  {id:48, text:"深く考えるより、まず動いてみるタイプだ", type:5, weight:0.8, reversed:true},
+  {id:49, text:"対立は避けたいほうで、争いになりそうなら引き下がる", type:8, weight:0.8, reversed:true},
+  {id:50, text:"成果や結果にはこだわらず、プロセスを楽しむタイプだ", type:3, weight:0.8, reversed:true},
+  {id:51, text:"不安を感じることはほとんどなく、物事を楽観的に捉えるほうだ", type:6, weight:0.8, reversed:true},
+  {id:52, text:"自分の意見や欲求は常にはっきりしている", type:9, weight:0.8, reversed:true},
+  {id:53, text:"自分はわりと平凡で、特別な存在だとは思わない", type:4, weight:0.8, reversed:true},
+  {id:54, text:"同じ場所で同じことを続けるのが好きで、変化は求めない", type:7, weight:0.8, reversed:true}
+];
+
+const TOTAL_QUESTIONS = QUESTIONS.length;
+const STORAGE_KEY_PROGRESS = 'aiknow_enneagram_progress';
+const STORAGE_KEY_RESULT = 'aiknow_enneagram_result';
+
+// Milestone config: questionIndex (0-based) => message
+const MILESTONES = {
+  13: { icon: '🎯', text: '1/4 完了！' },
+  26: { icon: '🔥', text: '半分クリア！' },
+  40: { icon: '✨', text: 'あと少し！' }
+};
+
+// State
+let currentIndex = 0;
+let responses = {};
+let isAnimating = false;
+let interstitialPending = false;
+
+// ===== DOM refs =====
+const questionCard = document.getElementById('questionCard');
+const questionNumber = document.getElementById('questionNumber');
+const questionText = document.getElementById('questionText');
+const questionCounter = document.getElementById('questionCounter');
+const progressPercent = document.getElementById('progressPercent');
+const progressFill1 = document.getElementById('progressFill1');
+const progressFill2 = document.getElementById('progressFill2');
+const progressFill3 = document.getElementById('progressFill3');
+const partLabel1 = document.getElementById('partLabel1');
+const partLabel2 = document.getElementById('partLabel2');
+const partLabel3 = document.getElementById('partLabel3');
+const interstitialOverlay = document.getElementById('interstitialOverlay');
+const interstitialIcon = document.getElementById('interstitialIcon');
+const interstitialTitle = document.getElementById('interstitialTitle');
+const interstitialDesc = document.getElementById('interstitialDesc');
+const milestonePopup = document.getElementById('milestonePopup');
+const milestoneIcon = document.getElementById('milestoneIcon');
+const milestoneTextEl = document.getElementById('milestoneText');
+const analysisScreen = document.getElementById('analysisScreen');
+
+// ===== Init =====
+function init() {
+  loadProgress();
+  renderQuestion(false);
+}
+
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_PROGRESS);
+    if (saved) {
+      const data = JSON.parse(saved);
+      responses = data.responses || {};
+      currentIndex = data.currentIndex || 0;
+      // Validate
+      if (currentIndex >= TOTAL_QUESTIONS) {
+        currentIndex = 0;
+        responses = {};
+      }
+    }
+  } catch (e) {
+    responses = {};
+    currentIndex = 0;
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify({
+      responses: responses,
+      currentIndex: currentIndex
+    }));
+  } catch (e) {}
+}
+
+// ===== Render =====
+function renderQuestion(animate) {
+  if (currentIndex >= TOTAL_QUESTIONS) return;
+
+  const q = QUESTIONS[currentIndex];
+  const qNum = currentIndex + 1;
+
+  // Update header counter
+  questionCounter.textContent = 'Q' + qNum + ' / ' + TOTAL_QUESTIONS;
+
+  // Update progress
+  updateProgress();
+
+  if (animate) {
+    // Animate out then in
+    isAnimating = true;
+    questionCard.classList.remove('slide-in-right', 'slide-in-left');
+    questionCard.classList.add('slide-out-left');
+
+    setTimeout(function() {
+      setQuestionContent(q, qNum);
+      questionCard.classList.remove('slide-out-left');
+      questionCard.classList.add('slide-in-right');
+      setTimeout(function() {
+        isAnimating = false;
+      }, 400);
+    }, 350);
+  } else {
+    setQuestionContent(q, qNum);
+  }
+}
+
+function setQuestionContent(q, qNum) {
+  questionNumber.textContent = 'Q' + qNum;
+  questionText.textContent = q.text;
+
+  // Reset answer buttons
+  var btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(function(btn) {
+    btn.classList.remove('selected');
+  });
+
+  // Restore previous answer if exists
+  if (responses[q.id] !== undefined) {
+    btns.forEach(function(btn) {
+      if (parseInt(btn.getAttribute('data-value')) === responses[q.id]) {
+        btn.classList.add('selected');
+      }
+    });
+  }
+}
+
+function updateProgress() {
+  var answeredCount = Object.keys(responses).length;
+  var pct = Math.round((answeredCount / TOTAL_QUESTIONS) * 100);
+  progressPercent.textContent = pct + '%';
+
+  // Part progress fills
+  // Part 1: Q1-18 (index 0-17), Part 2: Q19-36 (index 18-35), Part 3: Q37-54 (index 36-53)
+  var part1Answered = 0, part2Answered = 0, part3Answered = 0;
+  for (var i = 0; i < 18; i++) {
+    if (responses[QUESTIONS[i].id] !== undefined) part1Answered++;
+  }
+  for (var i = 18; i < 36; i++) {
+    if (responses[QUESTIONS[i].id] !== undefined) part2Answered++;
+  }
+  for (var i = 36; i < 54; i++) {
+    if (responses[QUESTIONS[i].id] !== undefined) part3Answered++;
+  }
+
+  progressFill1.style.width = (part1Answered / 18 * 100) + '%';
+  progressFill2.style.width = (part2Answered / 18 * 100) + '%';
+  progressFill3.style.width = (part3Answered / 18 * 100) + '%';
+
+  // Active part label
+  var currentPart = currentIndex < 18 ? 1 : currentIndex < 36 ? 2 : 3;
+  partLabel1.classList.toggle('active', currentPart === 1);
+  partLabel2.classList.toggle('active', currentPart === 2);
+  partLabel3.classList.toggle('active', currentPart === 3);
+}
+
+// ===== Answer Selection =====
+function selectAnswer(value) {
+  if (isAnimating) return;
+
+  var q = QUESTIONS[currentIndex];
+  responses[q.id] = value;
+
+  // Visual feedback
+  var btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(function(btn) {
+    btn.classList.remove('selected');
+    if (parseInt(btn.getAttribute('data-value')) === value) {
+      btn.classList.add('selected');
+    }
+  });
+
+  saveProgress();
+
+  // Auto-advance after 0.5s
+  setTimeout(function() {
+    advanceQuestion();
+  }, 500);
+}
+
+function advanceQuestion() {
+  var prevIndex = currentIndex;
+  currentIndex++;
+
+  // Check for interstitials at Q18 (index 17->18) and Q36 (index 35->36)
+  if (prevIndex === 17 && currentIndex === 18) {
+    showInterstitial(2, 36);
+    return;
+  }
+  if (prevIndex === 35 && currentIndex === 36) {
+    showInterstitial(3, 18);
+    return;
+  }
+
+  // Check for milestones
+  if (MILESTONES[prevIndex]) {
+    showMilestone(MILESTONES[prevIndex]);
+  }
+
+  if (currentIndex >= TOTAL_QUESTIONS) {
+    // All done - show analysis
+    showAnalysis();
+    return;
+  }
+
+  renderQuestion(true);
+}
+
+// ===== Interstitial =====
+function showInterstitial(partNum, remaining) {
+  interstitialIcon.textContent = partNum;
+  interstitialTitle.textContent = 'Part ' + partNum;
+  interstitialDesc.textContent = 'いい調子です！あと' + remaining + '問です';
+  interstitialOverlay.classList.add('show');
+}
+
+function dismissInterstitial() {
+  interstitialOverlay.classList.remove('show');
+  if (currentIndex < TOTAL_QUESTIONS) {
+    renderQuestion(true);
+  }
+}
+
+// ===== Milestone =====
+function showMilestone(ms) {
+  milestoneIcon.textContent = ms.icon;
+  milestoneTextEl.textContent = ms.text;
+  milestonePopup.classList.add('show');
+  setTimeout(function() {
+    milestonePopup.classList.remove('show');
+  }, 2000);
+}
+
+// ===== Scoring =====
+function calculateScores(responses) {
+  var rawScores = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0};
+  var maxScores = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0};
+  var minScores = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0};
+
+  QUESTIONS.forEach(function(q) {
+    var resp = responses[q.id];
+    var value = q.reversed ? (8 - resp) : resp;
+    rawScores[q.type] += value * q.weight;
+    maxScores[q.type] += 7 * q.weight;
+    minScores[q.type] += 1 * q.weight;
+  });
+
+  var normalized = {};
+  for (var t = 1; t <= 9; t++) {
+    normalized[t] = ((rawScores[t] - minScores[t]) / (maxScores[t] - minScores[t])) * 100;
+  }
+
+  var mean = 0;
+  for (var t = 1; t <= 9; t++) { mean += normalized[t]; }
+  mean /= 9;
+
+  var corrected = {};
+  for (var t = 1; t <= 9; t++) {
+    corrected[t] = Math.round(normalized[t] - mean + 50);
+  }
+
+  return corrected;
+}
+
+function determineType(scores) {
+  var mainType = 1, maxScore = 0;
+  for (var t = 1; t <= 9; t++) {
+    if (scores[t] > maxScore) { maxScore = scores[t]; mainType = t; }
+  }
+
+  var adjacent = {
+    1: [9, 2], 2: [1, 3], 3: [2, 4], 4: [3, 5], 5: [4, 6],
+    6: [5, 7], 7: [6, 8], 8: [7, 9], 9: [8, 1]
+  };
+  var adj = adjacent[mainType];
+  var wing = scores[adj[0]] >= scores[adj[1]] ? adj[0] : adj[1];
+
+  var gut = [8,9,1].reduce(function(best, t) { return scores[t] > scores[best] ? t : best; }, 8);
+  var heart = [2,3,4].reduce(function(best, t) { return scores[t] > scores[best] ? t : best; }, 2);
+  var head = [5,6,7].reduce(function(best, t) { return scores[t] > scores[best] ? t : best; }, 5);
+
+  var tritypeArr = [{t:gut,s:scores[gut]}, {t:heart,s:scores[heart]}, {t:head,s:scores[head]}];
+  tritypeArr.sort(function(a,b) { return b.s - a.s; });
+  var tritype = tritypeArr.map(function(x) { return x.t; }).join('');
+
+  var sortedScores = Object.values(scores).sort(function(a,b) { return b - a; });
+  var diff = sortedScores[0] - sortedScores[1];
+  var confidence;
+  if (diff >= 15) confidence = 95;
+  else if (diff >= 10) confidence = 85;
+  else if (diff >= 5) confidence = 70;
+  else if (diff >= 3) confidence = 50;
+  else confidence = 30;
+
+  return { mainType: mainType, wing: wing, tritype: tritype, scores: scores, confidence: confidence };
+}
+
+// ===== Analysis Screen =====
+function showAnalysis() {
+  analysisScreen.classList.add('show');
+
+  // Calculate results
+  var scores = calculateScores(responses);
+  var result = determineType(scores);
+
+  // Save result
+  try {
+    localStorage.setItem(STORAGE_KEY_RESULT, JSON.stringify(result));
+    // Clear progress
+    localStorage.removeItem(STORAGE_KEY_PROGRESS);
+  } catch (e) {}
+
+  // Animate steps
+  var steps = [
+    { show: 0, done: 1500 },
+    { show: 1500, done: 3000 },
+    { show: 3000, done: 4500 },
+    { show: 4500, done: 6000 },
+    { show: 6000, done: 7500 }
+  ];
+
+  steps.forEach(function(timing, i) {
+    var stepEl = document.getElementById('step' + (i + 1));
+    var indEl = document.getElementById('stepInd' + (i + 1));
+
+    setTimeout(function() {
+      stepEl.classList.add('visible');
+      indEl.classList.add('loading');
+    }, timing.show);
+
+    setTimeout(function() {
+      indEl.classList.remove('loading');
+      indEl.classList.add('done');
+    }, timing.done);
+  });
+
+  // Redirect at 8s
+  setTimeout(function() {
+    window.location.href = 'result.html';
+  }, 8000);
+}
+
+// ===== Navigation =====
+function goBack() {
+  if (isAnimating) return;
+
+  if (currentIndex > 0) {
+    currentIndex--;
+    // Animate backwards
+    isAnimating = true;
+    questionCard.classList.remove('slide-in-right', 'slide-in-left');
+    questionCard.classList.add('slide-out-right');
+    setTimeout(function() {
+      var q = QUESTIONS[currentIndex];
+      var qNum = currentIndex + 1;
+      questionCounter.textContent = 'Q' + qNum + ' / ' + TOTAL_QUESTIONS;
+      updateProgress();
+      setQuestionContent(q, qNum);
+      questionCard.classList.remove('slide-out-right');
+      questionCard.classList.add('slide-in-left');
+      setTimeout(function() {
+        isAnimating = false;
+      }, 400);
+    }, 350);
+  } else {
+    // Go back to previous page
+    if (window.history.length > 1) {
+      window.history.back();
+    }
+  }
+}
+
+// ===== Start =====
+init();
+</script>
+</body>
+</html>
